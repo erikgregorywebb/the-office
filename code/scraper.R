@@ -1,7 +1,3 @@
-#library(robotstxt)
-#library(urltools)
-#robotstxt::get_robotstxt(urltools::domain("https://www.officequotes.net")) %>% cat()
-
 library(tidyverse)
 library(stringr)
 library(rvest)
@@ -48,3 +44,14 @@ for (i in 1:length(episode_links)) {
   })
 }
 raw = do.call(rbind, datalist)
+
+# clean
+the_office = raw %>%
+  separate(text, into = c('speaker', 'text'), sep = ': ') %>%
+  mutate(clean_text = trimws(str_remove_all(text, '\\[.*?\\]'))) %>% 
+  mutate(id = row_number()) %>%
+  select(id, season, episode, scene, line, speaker, text = clean_text) %>% View()
+
+# export
+setwd("~/Downloads")
+write_csv(the_office, 'the_office.csv')
