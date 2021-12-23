@@ -13,7 +13,7 @@ datalist = list()
 counter = 1
 for (i in 1:length(episode_links)) {
   tryCatch({
-    Sys.sleep(5)
+    Sys.sleep(15)
     print(episode_links[i])
     
     # season and episode number
@@ -45,12 +45,16 @@ for (i in 1:length(episode_links)) {
 }
 raw = do.call(rbind, datalist)
 
+# missing season 4, episode 8
+# missing season 5, episode 18
+
 # clean
 the_office = raw %>%
   separate(text, into = c('speaker', 'text'), sep = ': ') %>%
   mutate(clean_text = trimws(str_remove_all(text, '\\[.*?\\]'))) %>% 
+  filter(., is.na(text) == FALSE) %>%
   mutate(id = row_number()) %>%
-  select(id, season, episode, scene, line, speaker, text = clean_text) %>% View()
+  select(id, season, episode, scene, line, speaker, text = clean_text)
 
 # export
 setwd("~/Downloads")
